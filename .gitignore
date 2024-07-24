@@ -1,0 +1,15 @@
+*.h5
+*.pickle
+*.gz
+*.zip
+*.log
+*.jpg
+*.png
+*.pdf
+*.tar*
+*.im.*
+*.im
+*.image*
+*.tt0*
+*__pycache__*
+.ipynb_checkpoints/
