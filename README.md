@@ -1,7 +1,7 @@
 # SpecStacker: The Spectral Stacking Code
 This is a new rest-frame spectral stacking code.
 
-The code takes an array of observed-frame wavelength, flux density, flux uncertainties and the corresponding redshifts as input parameters, shifts all spectra to the rest-frame, and resamples them onto a common wavelegth grid based on the redshift distribution and an input
+The code takes arrays of observed-frame wavelength, flux density, flux uncertainties and the corresponding redshifts as input parameters, shifts all spectra to the rest-frame, and resamples them onto a common wavelegth grid based on the redshift distribution and an input pixel size (e.g. 1Å). The normalisation of each spectrum is performed by taking the median, computed at the reddest possible end of the area where all spectra populate the common wavelength grid, with prominent emission lines masked out. The composite spectrum is then created by taking the 
 
 and outputs the best-fit parameters and quality-checking plots to the paths specified by the user.
 
