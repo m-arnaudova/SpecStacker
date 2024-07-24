@@ -1,0 +1,33 @@
+1033.82, O VI, narrow
+1215.24, Lyα, broad
+1240.81, N V, narrow
+1305.53, O I, narrow
+1335.31, C II, narrow
+1399.8, Si IV + O IV, narrow
+1549.48, C IV, broad
+1640.4, He II, narrow
+1665.85, O III, narrow
+1857.4, Al III, narrow
+1908.734, C III,narrow
+2439.5,Ne IV, narrow
+2799.117, Mg II, broad
+3426.85, Ne VI, narrow
+3727.092, O II, narrow
+3729.875, O II, narrow
+3934.777, K, absorption
+3969.588, H, absorption
+4305.61, G, absorption
+4341.68, Hgamma, broad
+4364.436, O III, narrow
+4862.68, Hbeta, broad
+4932.603, O III, narrow
+4960.295, O III, narrow
+5008.240, O III, narrow
+5176.7 , Mg, absorption
+5895.6, Na, absorption
+6549.86, N II, narrow
+6564.61, Halpha, broad
+6585.27, N II, narrow
+6718.29, S II, narrow
+6732.67, S II, narrow
+
