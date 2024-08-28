@@ -1,5 +1,5 @@
 # SpecStacker: The Spectral Stacking Code
-This is a new rest-frame spectral stacking code. For a quick start-up tutorial, see [example](https://nbviewer.org/github/m-arnaudova/SpecStacker/blob/main/stack_example.ipynb) notebook.
+This is a new rest-frame spectral stacking code for galaxies and AGN spectra. For a quick start-up tutorial, see [example](https://nbviewer.org/github/m-arnaudova/SpecStacker/blob/main/stack_example.ipynb) notebook.
 
 The code takes arrays of observed-frame wavelength, flux density, flux uncertainties and the corresponding redshifts as input parameters, shifts all spectra to the rest-frame, and resamples them onto a common wavelegth grid based on the redshift distribution and an input pixel size (e.g. 1Å). The normalisation of each spectrum is performed by taking the median, computed at the reddest possible end of the area where all spectra populate the common wavelength grid, with prominent emission lines masked out. The composite spectrum is then created by taking the median of all normalized flux density values that fall within a given wavelength bin.
 
