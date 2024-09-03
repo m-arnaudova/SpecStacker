@@ -6,10 +6,8 @@ from astropy.coordinates import SkyCoord
 import extinction as ext
 from scipy import interpolate
 import sfdmap2.sfdmap as sfd
-import spectres
-
 from lmfit.models import GaussianModel
-import warnings
+import os, sys, warnings
 
 # Ignore warnings
 warnings.filterwarnings("ignore", message="All-NaN slice encountered")
