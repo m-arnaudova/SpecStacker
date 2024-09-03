@@ -24,6 +24,6 @@ setup(
     python_requires='>=3.6',  # Specify the Python versions you support
     install_requires=[
         # List your package dependencies here, e.g.,
-        'astropy','extinction','lmfit','matplotlib','numpy','scipy','sfdmap','spectres'
+        'astropy','extinction','lmfit','matplotlib','numpy','scipy','sfdmap2','spectres'
     ],
 )
