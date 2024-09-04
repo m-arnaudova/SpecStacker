@@ -5,20 +5,18 @@ import spectres
 from astropy.coordinates import SkyCoord
 import extinction as ext
 from scipy import interpolate
-import sfdmap as sfd
-import spectres
-
+import sfdmap2.sfdmap as sfd
 from lmfit.models import GaussianModel
-import warnings
+import os, sys, warnings
 
 # Ignore warnings
 warnings.filterwarnings("ignore", message="All-NaN slice encountered")
 warnings.filterwarnings("ignore", message="Degrees of freedom <= 0 for slice")
 
-
-line_list_dir='SDSS_emission_lines.txt'
-dustmap_dir='dustmaps/sfddata-master'
-filter_curve_dir='SDSS_filter_curves.txt'
+basedir = os.path.dirname(__file__)+'/'
+line_list_dir=basedir+'SDSS_emission_lines.txt'
+dustmap_dir=basedir+'dustmaps/sfddata-master'
+filter_curve_dir=basedir+'SDSS_filter_curves.txt'
 
 def check_data(wave_spec, sigma_spec):
     ids=np.full(len(wave_spec), -99999)
