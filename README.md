@@ -8,6 +8,7 @@ Unique selling points:
 - Easily applicable to different instruments and datasets
 - Ideal for future large spectroscopic surveys such as the WEAVE-LOFAR survey ([Smith et al. 2016](https://ui.adsabs.harvard.edu/abs/2016sf2a.conf..271S/abstract))
 
+For more details, see [Arnaudova et al. (2024)](https://ui.adsabs.harvard.edu/abs/2024MNRAS.528.4547A/abstract)
 
 If you make use of `SpecStacker` in your research, please include the following citation:
 
