@@ -107,13 +107,17 @@ def resample(wave_common, wave_obs, flux, z):
     """
     # Initialize new flux array with NaNs
     flux_new = np.full((len(flux), len(wave_common)), np.nan)
-
     for i in range(len(flux)):
         # Only consider non-NaN values in flux
         no_nan = ~np.isnan(flux[i])
 
         # Compute rest-frame wavelengths
         wave_rest = wave_obs[i] / (1 + z[i])
+        
+        if len(wave_rest[no_nan]) == 0:
+            print(f"Spectrum {i} is empty after masking NaNs or invalid values. Skipping...")
+            print(wave_rest[i],flux[i], z[i])
+            continue  # leave flux_new[i] as NaNs
         
         # Use spectres to resample flux onto common wavelength grid
         flux_new[i] = spectres.spectres(wave_common, wave_rest[no_nan], 
@@ -249,24 +253,17 @@ def create_spectra(wave_spec, flux_spec, sigma_spec, z, flux_tem, wave_tem, filt
     
     # If there are spectra in the i-band filter range, calculate the i-band magnitude
     if idx_i.size != 0:
-        F_i = sum(flux_spec[idx_i] * t_i(wave_spec[idx_i])) / sum(t_i(wave_spec[idx_i]))
-        F_i_Jy = F_i * 10**-17 * (3.34 * 10**4.0 * 7480.0**2.0) # Convert to 10^-17 erg cm^-2 s^-1 A^-1
-        mag_i = -2.5 * np.log10(F_i_Jy) + 8.9
-    
-        Fi_eff = sum(flux_new[idx_i] * t_i(wave_spec[idx_i])) / sum(t_i(wave_spec[idx_i]))
-        F_i_Jy = 10 ** ((mag_i - 8.90) / -2.5)  # rearranging mAB_r=-2.5log10(F/Jy)+8.9
-        F_i = F_i_Jy * 10 ** 17 / (3.34 * 10 ** 4.0 * 7480.0 ** 2.0)  # convert to SDSS units -> 10^-17 erg cm^-2 s^-1 A^-1 
+        F_i = np.nansum(flux_spec[idx_i] * t_i(wave_spec[idx_i])) / np.nansum(t_i(wave_spec[idx_i]))
+        Fi_eff = np.nansum(flux_new[idx_i] * t_i(wave_spec[idx_i])) / np.nansum(t_i(wave_spec[idx_i]))
         flux_denorm = flux_new * F_i / Fi_eff
-    
-        # Add noise to flux values
+ 
         flux_noise = flux_denorm + np.random.normal(0, 1, len(sigma_spec)) * sigma_spec
         flux_noise[sigma_spec == np.inf] = np.nan  # inf values can occur from ivar=0
-    
         #return simulated flux
         return flux_noise
     
     else:
-        print('spectrum not in i-band range')
+        print('Spectrum not in i-band range')
 
 def rescale(F,F_Err,wln,flux_tem,wave_tem,loc):
     """
@@ -274,7 +271,7 @@ def rescale(F,F_Err,wln,flux_tem,wave_tem,loc):
     """
     # resample the template to match the wavelength range of the input spectrum
     Ftem = spectres.spectres(wln, wave_tem, flux_tem, fill=np.nan, verbose=True)
-    
+
     # rescale the flux and flux error of the input spectrum
     Fcal = F * np.average(Ftem[loc]) / np.average(F[loc])
     Fcal_Err = F_Err * np.average(Ftem[loc]) / np.average(F[loc])
@@ -387,27 +384,49 @@ def fit_gaussians_to_residual(stack_tem, stack_sim, loc):
     
     return chi, wave, np.array(mu), np.array(mu_err), np.array(sigma), np.array(sigma_err), red_chi
 
+
 def remove_nans(stack_tem, stack_sim):
     """
-    Remove NaNs from the stacked spectra.
+    Remove NaNs from the stacked spectra and adjust normalization ranges accordingly.
+  
     """
-    # Extract the data from the input stacks
+    # Unpack stacks
     F1, F1_Err, N1, wln1, norm_range1 = stack_tem
     F2, F2_Err, N2, wln2, norm_range2 = stack_sim
+
+    # -----------------------
+    # Print wavelength ranges BEFORE NaN removal
+    # -----------------------
+    #print("Before NaN removal:")
+    #print("F1 normalization wavelength range:", wln1[norm_range1])
+    #print("F2 normalization wavelength range:", wln2[norm_range2])
+
+    # Find indices of valid (non-NaN) points in both stacks
+    mask = ~np.isnan(F1) & ~np.isnan(F2)
+    idx = np.where(mask)[0]
+
+    # Apply mask to stacks
+    F1, F1_Err, N1, wln1 = F1[mask], F1_Err[mask], N1[mask], wln1[mask]
+    F2, F2_Err, N2, wln2 = F2[mask], F2_Err[mask], N2[mask], wln2[mask]
+
+    # Build mapping from original indices to new masked indices
+    old_to_new = {old_i: new_i for new_i, old_i in enumerate(idx)}
+
+    # Map normalization ranges to the new masked arrays, keeping only surviving indices
+    new_norm_range1 = np.array([old_to_new[i] for i in norm_range1 if i in old_to_new], dtype=int)
+    new_norm_range2 = np.array([old_to_new[i] for i in norm_range2 if i in old_to_new], dtype=int)
+
+    # -----------------------
+    # Print wavelength ranges AFTER NaN removal
+    # -----------------------
+    #print("After NaN removal:")
+    #print("F1 normalization wavelength range:", wln1[new_norm_range1])
+    #print("F2 normalization wavelength range:", wln2[new_norm_range2])
     
-    # Find the indices of the non-NaN values in both stacks
-    idx = np.where((np.isnan(F1) == False) & (np.isnan(F2) == False))[0]
-    
-    # Adjust the normalization ranges based on the positions of the NaNs
-    n_nans1 = np.sum(np.isnan(F1[:norm_range1[0]]))
-    n_nans2 = np.sum(np.isnan(F2[:norm_range2[0]]))
-    norm_range1 -= n_nans1
-    norm_range2 -= n_nans2
-    
-    stack_tem = [F1[idx], F1_Err[idx], N1[idx], wln1[idx], norm_range1]
-    stack_sim = [F2[idx], F2_Err[idx], N2[idx], wln2[idx], norm_range2]
-    
-    # Return the cleaned stacks
+    # Pack cleaned stacks with updated normalization ranges
+    stack_tem = [F1, F1_Err, N1, wln1, new_norm_range1]
+    stack_sim = [F2, F2_Err, N2, wln2, new_norm_range2]
+
     return stack_tem, stack_sim
 
 
