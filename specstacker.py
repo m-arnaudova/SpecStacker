@@ -224,7 +224,7 @@ def stacking_method(wave_obs, flux_obs, z, RA=None, DEC=None,
     
     # Bootstrap resampling to estimate uncertainties in the stacked spectrum
     F_Err = Bootstrap(1000, Fnorm)
-    F_Err[N <= 5] = F_stack[N <= 5] / np.sqrt(N[N<=5])
+    F_Err[N <= 10] = F_stack[N <= 10] / np.sqrt(N[N<=10])
     
     # Save stacked spectrum and associated information in a list
     stack = [F_stack, F_Err, N, wave_common, norm_range]
